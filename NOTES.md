@@ -38,7 +38,8 @@ Do một số hạn chế về quyền hạn trên tài khoản thực hành (kh
 Dưới đây là kết quả đo lường thực tế từ hệ thống:
 - **Init Duration (Cold Start)**: 273.56 ms
 - **Warm Start Duration**: 3.16 ms
-- **Nhận xét**: Thời gian khởi động dưới 300ms là một kết quả rất tốt, đảm bảo trải nghiệm người dùng mượt mà ngay cả khi ứng dụng khởi động lại.
+- **Nhận xét**: Thời gian khởi động dưới 300ms là một kết quả tốt, đảm bảo trải nghiệm người dùng mượt mà ngay cả khi ứng dụng khởi động lại.
 
 ### Minh chứng
 ![Kết quả truy cập và đo lường](./evidence/image.png)
+![Minh chứng Lambda](./evidence/image%20copy.png)
