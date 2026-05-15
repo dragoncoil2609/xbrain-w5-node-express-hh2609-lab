@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "BYOL challenge \u2014 Node.js Express on Lambda (Pure CloudFormation\
+  \ Version - HH2609)"
+Resources:
+  ExpressFunctionRoleHH2609:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      SamResourceId: ExpressFunctionRoleHH2609
+  ExpressFunctionHH2609:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: byol-node-express-hh2609
+      Handler: lambda.handler
+      Runtime: nodejs22.x
+      Code:
+        S3Bucket: byol-express-hh038-unique-123
+        S3Key: 7104c50d28c51374984f1da6a1dd55ef
+      MemorySize: 512
+      Timeout: 10
+      Role:
+        Fn::GetAtt:
+        - ExpressFunctionRoleHH2609
+        - Arn
+      Architectures:
+      - arm64
+    Metadata:
+      SamResourceId: ExpressFunctionHH2609
+  ExpressHttpApiHH2609:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: byol-node-express-hh2609-api
+      ProtocolType: HTTP
+    Metadata:
+      SamResourceId: ExpressHttpApiHH2609
+  ExpressHttpApiStageHH2609:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId:
+        Ref: ExpressHttpApiHH2609
+      StageName: $default
+      AutoDeploy: true
+    Metadata:
+      SamResourceId: ExpressHttpApiStageHH2609
+  ExpressHttpApiIntegrationHH2609:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: ExpressHttpApiHH2609
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+        - ExpressFunctionHH2609
+        - Arn
+      PayloadFormatVersion: '2.0'
+    Metadata:
+      SamResourceId: ExpressHttpApiIntegrationHH2609
+  ExpressHttpApiRouteHH2609:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: ExpressHttpApiHH2609
+      RouteKey: ANY /{proxy+}
+      Target:
+        Fn::Join:
+        - /
+        - - integrations
+          - Ref: ExpressHttpApiIntegrationHH2609
+    Metadata:
+      SamResourceId: ExpressHttpApiRouteHH2609
+  ExpressHttpApiRootRouteHH2609:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: ExpressHttpApiHH2609
+      RouteKey: ANY /
+      Target:
+        Fn::Join:
+        - /
+        - - integrations
+          - Ref: ExpressHttpApiIntegrationHH2609
+    Metadata:
+      SamResourceId: ExpressHttpApiRootRouteHH2609
+  ExpressLambdaPermissionHH2609:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: ExpressFunctionHH2609
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Sub: arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ExpressHttpApiHH2609}/*/*
+    Metadata:
+      SamResourceId: ExpressLambdaPermissionHH2609
+Outputs:
+  ApiUrl:
+    Value:
+      Fn::Sub: https://${ExpressHttpApiHH2609}.execute-api.${AWS::Region}.amazonaws.com
